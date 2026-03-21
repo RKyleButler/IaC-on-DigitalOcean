@@ -8,33 +8,37 @@ CYAN='\e[36m'
 NC='\e[0m' # No Color (resets the text attributes)
 
 # Dowload the Package zip
-echo "${CYAN}Downloading Terraform zip file.${NC}"
+echo "${CYAN}Downloading Terraform zip file...${NC}"
 curl -o ~/terraform.zip https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip 
 
 # Make Terraform's directory
-echo "${CYAN}Making Terraform Directory.${NC}"
+echo "${CYAN}Making Terraform Directory...${NC}"
 mkdir -p ~/opt/terraform
 
 # Check for the 'unzip' program
-if command_exists unzip; then
-  echo "${GREEN}unzip is installed. Proceeding with script.${NC}"
+if command -v unzip  >/dev/null 2>&1; then
+  echo "${GREEN}unzip is installed. Proceeding with script...${NC}"
 else
-  echo "${YELLOW}Error: unzip is not installed${NC}" >&2
-  echo "${GREEN}Installing Unzip${NC}"
+  echo "${YELLOW}Error: unzip is not installed...${NC}" >&2
+  echo "${GREEN}Installing Unzip...${NC}"
 
   # Install
-  sudo apt install unzip
+  sudo apt update && sudo apt install -y unzip
 fi
 
 ### AUTOMATE UPDATING .bashrc ###
 # Setup Varriables for check
 LINE='export PATH=$PATH:~/opt/terraform'
-FILE="~/.bashrc"
+FILE="$HOME/.bashrc"
 
 # Check if the line is already present
+# Add it in if necessary
 if ! grep -Fxq "$LINE" "$FILE"; then
+    echo "${CYAN}Adding file path $FILE...${NC}"
     echo "$LINE" >> "$FILE"
-    echo "Path added to $FILE"
+    echo "${GREEN}Path added to $FILE${NC}"
 else
-    echo "${GREEN}Path already exists in $FILE ${NC}"
+    echo "${CYAN}Path already exists in $FILE, Exiting...${NC}"
 fi
+
+echo "${GREEN}Terraform installation complete!${NC}"
