@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e  # Ensures the script stops and triggers the trap on any error
 
 # Define Colors
 RED='\e[31m'
@@ -12,9 +13,19 @@ TERRAFORM_DIR="$HOME/opt/terraform"
 BASHRC="$HOME/.bashrc"
 ZIP_FILE="$HOME/terraform.zip"
 
+# 2. Error Handler Function
+failure() {
+  echo -e "\n${RED}ERROR: Installation failed at line $1.${NC}" >&2
+  exit 1
+}
+
+# 3. Traps: Run failure function on error, and cleanup on exit
+trap 'failure $LINENO' ERR
+trap 'rm -f "$ZIP_FILE"' EXIT
+
 # Dowload the Package zip
 echo -e "${CYAN}Downloading Terraform zip file...${NC}"
-curl -o ~/terraform.zip https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip 
+curl -fLo ~/terraform.zip https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip 
 
 # Make Terraform's directory
 echo -e "${CYAN}Making Terraform Directory...${NC}"
@@ -43,7 +54,7 @@ LINE="export PATH=\$PATH:$TERRAFORM_DIR"
 # Add it in if necessary
 if ! grep -Fxq "$LINE" "$BASHRC"; then
     echo -e "${CYAN}Adding file path $BASHRC...${NC}"
-    echo -e "$LINE" >> "$BASHRC"
+    echo "$LINE" >> "$BASHRC"
     echo -e "${GREEN}Path added to $BASHRC${NC}"
 else
     echo -e "${CYAN}Path already exists in $BASHRC, Exiting...${NC}"
