@@ -5,7 +5,11 @@ RED='\e[31m'
 GREEN='\e[32m'
 YELLOW='\e[33m'
 CYAN='\e[36m'
-NC='\e[0m' # No Color (resets the text attributes)
+NC='\e[0m' # No Color (resets the text attributes) 
+
+# Use $HOME instead of ~ for better reliability in scripts
+TERRAFORM_DIR="$HOME/opt/terraform"
+BASHRC="$HOME/.bashrc"
 
 # Dowload the Package zip
 echo "${CYAN}Downloading Terraform zip file...${NC}"
@@ -28,17 +32,16 @@ fi
 
 ### AUTOMATE UPDATING .bashrc ###
 # Setup Varriables for check
-LINE='export PATH=$PATH:~/opt/terraform'
-FILE="$HOME/.bashrc"
+LINE="export PATH=$PATH:$TERRAFORM_DIR"
 
 # Check if the line is already present
 # Add it in if necessary
-if ! grep -Fxq "$LINE" "$FILE"; then
-    echo "${CYAN}Adding file path $FILE...${NC}"
-    echo "$LINE" >> "$FILE"
-    echo "${GREEN}Path added to $FILE${NC}"
+if ! grep -Fxq "$LINE" "$BASHRC"; then
+    echo "${CYAN}Adding file path $BASHRC...${NC}"
+    echo "$LINE" >> "$BASHRC"
+    echo "${GREEN}Path added to $BASHRC${NC}"
 else
-    echo "${CYAN}Path already exists in $FILE, Exiting...${NC}"
+    echo "${CYAN}Path already exists in $BASHRC, Exiting...${NC}"
 fi
 
 echo "${GREEN}Terraform installation complete!${NC}"
