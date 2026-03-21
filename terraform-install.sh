@@ -7,41 +7,50 @@ YELLOW='\e[33m'
 CYAN='\e[36m'
 NC='\e[0m' # No Color (resets the text attributes) 
 
-# Use $HOME instead of ~ for better reliability in scripts
+# Variables for better reliability
 TERRAFORM_DIR="$HOME/opt/terraform"
 BASHRC="$HOME/.bashrc"
+ZIP_FILE="$HOME/terraform.zip"
 
 # Dowload the Package zip
-echo "${CYAN}Downloading Terraform zip file...${NC}"
+echo -e "${CYAN}Downloading Terraform zip file...${NC}"
 curl -o ~/terraform.zip https://releases.hashicorp.com/terraform/1.1.3/terraform_1.1.3_linux_amd64.zip 
 
 # Make Terraform's directory
-echo "${CYAN}Making Terraform Directory...${NC}"
-mkdir -p ~/opt/terraform
+echo -e "${CYAN}Making Terraform Directory...${NC}"
+mkdir -p $TERRAFORM_DIR
 
 # Check for the 'unzip' program
 if command -v unzip  >/dev/null 2>&1; then
-  echo "${GREEN}unzip is installed. Proceeding with script...${NC}"
+  echo -e "${GREEN}unzip is installed. Proceeding with script...${NC}"
 else
-  echo "${YELLOW}Error: unzip is not installed...${NC}" >&2
-  echo "${GREEN}Installing Unzip...${NC}"
+  echo -e "${YELLOW}Error: unzip is not installed...${NC}" >&2
+  echo -e "${GREEN}Installing Unzip...${NC}"
 
   # Install
   sudo apt update && sudo apt install -y unzip
 fi
 
+#Unzip the terraform directory
+echo -e "${CYAN}Unzipping Terraform to $TERRAFORM_DIR...${NC}"
+unzip -o $ZIP_FILE -d $TERRAFORM_DIR
+
 ### AUTOMATE UPDATING .bashrc ###
 # Setup Varriables for check
-LINE="export PATH=$PATH:$TERRAFORM_DIR"
+LINE="export PATH=\$PATH:$TERRAFORM_DIR"
 
 # Check if the line is already present
 # Add it in if necessary
 if ! grep -Fxq "$LINE" "$BASHRC"; then
-    echo "${CYAN}Adding file path $BASHRC...${NC}"
-    echo "$LINE" >> "$BASHRC"
-    echo "${GREEN}Path added to $BASHRC${NC}"
+    echo -e "${CYAN}Adding file path $BASHRC...${NC}"
+    echo -e "$LINE" >> "$BASHRC"
+    echo -e "${GREEN}Path added to $BASHRC${NC}"
 else
-    echo "${CYAN}Path already exists in $BASHRC, Exiting...${NC}"
+    echo -e "${CYAN}Path already exists in $BASHRC, Exiting...${NC}"
 fi
 
-echo "${GREEN}Terraform installation complete!${NC}"
+# Cleanup - Remove the zip file to keep the home directory clean
+echo -e "${CYAN}Cleaning up zip file...${NC}"
+rm "$ZIP_FILE"
+
+echo -e "${GREEN}Terraform installation complete!${NC}"
