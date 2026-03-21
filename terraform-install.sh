@@ -53,4 +53,10 @@ fi
 echo -e "${CYAN}Cleaning up zip file...${NC}"
 rm "$ZIP_FILE"
 
+# VERIFICATION
+echo -e "${YELLOW}Verifying installation...${NC}"
+# Use the full path for the check since the current shell hasn't sourced .bashrc yet
+"$TERRAFORM_DIR/terraform" --version
+
 echo -e "${GREEN}Terraform installation complete!${NC}"
+echo -e "${YELLOW}Note: Run 'source ~/.bashrc' in your terminal to start using 'terraform' globally.${NC}"
